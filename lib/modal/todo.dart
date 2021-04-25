@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class TodoModal with ChangeNotifier {
+class TodoModal {
   // declare variable
   String _taskName = "";
   String _taskDescription = "";
@@ -11,11 +11,9 @@ class TodoModal with ChangeNotifier {
 
   void set_taskName(String value) {
     _taskName = value;
-    notifyListeners();
   }
 
   void set_taskDescription(String value) {
     _taskDescription = value;
-    notifyListeners();
   }
 }

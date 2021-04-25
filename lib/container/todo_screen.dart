@@ -1,60 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:todolist_with_provider/modal/todo.dart';
-import 'package:todolist_with_provider/modal/todo_list.dart';
+import 'package:todolist_with_provider/viewmodal/todo_viewmodal.dart';
 import 'package:todolist_with_provider/widget/add_task_header.dart';
 
-class TodoScreen extends StatelessWidget {
-  final addTaskController = TextEditingController();
+class TodoScreen extends StatefulWidget {
+  TextEditingController taskInputController = new TextEditingController();
+  ScrollController _scrollController = new ScrollController();
 
-  void onPressAddTask(context) {
-    final todoListModal = Provider.of<TodoListModal>(context, listen: false);
-    TodoModal newTodo = new TodoModal();
-    if (addTaskController.text.length > 0) {
-      newTodo.set_taskName(addTaskController.text);
-    } else {
-      newTodo.set_taskName("Empty name task");
-    }
-    todoListModal.add_todo_item(newTodo);
-    addTaskController.text = "";
+  @override
+  _TodoScreenState createState() => _TodoScreenState();
+}
+
+class _TodoScreenState extends State<TodoScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<TodoViewModal>(context, listen: false).getListTodo();
   }
 
   @override
   Widget build(BuildContext context) {
+    final todoListVM = Provider.of<TodoViewModal>(context);
     return Scaffold(
-      body: Container(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              AddTaskHeader(
-                textFieldController: addTaskController,
-                voidCallback: () => onPressAddTask(context),
-              ),
-              ListContent()
-            ],
-          )),
+      body: Builder(
+        builder: (BuildContext newContext) {
+          return Container(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  AddTaskHeader(
+                    textFieldController: widget.taskInputController,
+                    voidCallback: () => todoListVM.addNewTodoToList(
+                        widget.taskInputController,
+                        widget._scrollController,
+                        newContext),
+                  ),
+                  ListContent(scrollController: widget._scrollController)
+                ],
+              ));
+        },
+      ),
     );
   }
 }
 
 class ListContent extends StatelessWidget {
+  ScrollController scrollController;
+
+  ListContent({this.scrollController});
+
   @override
   Widget build(BuildContext context) {
-    final todoListModal = Provider.of<TodoListModal>(context);
-    var todoList = todoListModal.get_todoList();
-
+    final todoListVM = Provider.of<TodoViewModal>(context);
     return Expanded(
         flex: 1,
         child: Container(
           alignment: Alignment.topCenter,
           child: ListView.builder(
+              controller: scrollController,
               physics: BouncingScrollPhysics(),
-              itemCount: todoList.length,
+              itemCount: todoListVM.listTodo.length,
               itemBuilder: (context, index) {
                 return TodoItem(
-                  listItem: todoList,
+                  listItem: todoListVM.listTodo,
                   index: index,
                 );
               }),
