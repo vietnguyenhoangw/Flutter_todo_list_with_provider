@@ -81,15 +81,38 @@ class TodoItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 15.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(color: Colors.amber[300], spreadRadius: 3),
+        ],
+      ),
+      padding: const EdgeInsets.only(left: 20.0),
       margin: const EdgeInsets.only(bottom: 15.0),
       height: 50,
-      color: Colors.amber[300],
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          Text(
-            '${listItem[index].get_taskName()}',
+          Expanded(
+            flex: 1,
+            child: Text(
+              '${listItem[index].get_taskName()}',
+            ),
+          ),
+          Expanded(
+            flex: 0,
+            child: MaterialButton(
+              minWidth: 20.0,
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+              onPressed: () {
+                print("123123123123");
+              },
+              child: Icon(
+                Icons.delete,
+                color: Colors.black38,
+              ),
+            ),
           ),
         ],
       ),
