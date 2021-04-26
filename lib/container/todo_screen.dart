@@ -32,10 +32,8 @@ class _TodoScreenState extends State<TodoScreen> {
                 children: [
                   AddTaskHeader(
                     textFieldController: widget.taskInputController,
-                    voidCallback: () => todoListVM.addNewTodoToList(
-                        widget.taskInputController,
-                        widget._scrollController,
-                        newContext),
+                    voidCallback: () => todoListVM.addNewItem(
+                        widget.taskInputController, newContext),
                   ),
                   ListContent(scrollController: widget._scrollController)
                 ],
@@ -87,9 +85,8 @@ class TodoItem extends StatelessWidget {
           BoxShadow(color: Colors.amber[300], spreadRadius: 3),
         ],
       ),
-      padding: const EdgeInsets.only(left: 20.0),
+      padding: const EdgeInsets.only(left: 20.0, top: 10.0, bottom: 10.0),
       margin: const EdgeInsets.only(bottom: 15.0),
-      height: 50,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -105,9 +102,9 @@ class TodoItem extends StatelessWidget {
               minWidth: 20.0,
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
-              onPressed: () {
-                print("123123123123");
-              },
+              onPressed: () =>
+                  Provider.of<TodoViewModal>(context, listen: false)
+                      .removeItem(listItem[index]),
               child: Icon(
                 Icons.delete,
                 color: Colors.black38,

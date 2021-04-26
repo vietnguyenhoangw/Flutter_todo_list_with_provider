@@ -10,6 +10,10 @@ class TodoListModal {
   }
 
   void add_todo_item(TodoModal todoTask) {
-    _todoList.add(todoTask);
+    _todoList.insert(0, todoTask);
+  }
+
+  int get_todoList_size() {
+    return _todoList.length;
   }
 }

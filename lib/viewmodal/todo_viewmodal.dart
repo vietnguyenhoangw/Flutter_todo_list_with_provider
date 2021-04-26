@@ -5,13 +5,20 @@ import 'package:todolist_with_provider/modal/todo_list.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class TodoViewModal extends ChangeNotifier {
+  // init modal
   TodoListModal todoListModal = new TodoListModal();
 
+  // decrease variance
   List<TodoModal> listTodo = [];
 
-  void addNewTodoToList(
+  void getListTodo() {
+    List<TodoModal> listTodoModal = todoListModal.get_todoList();
+    this.listTodo = listTodoModal;
+    notifyListeners();
+  }
+
+  void addNewItem(
     TextEditingController taskInputController,
-    ScrollController scrollController,
     BuildContext context,
   ) {
     if (taskInputController.text.isEmpty) {
@@ -25,20 +32,20 @@ class TodoViewModal extends ChangeNotifier {
           fontSize: 16.0);
     } else {
       TodoModal newTodo = new TodoModal();
+      int generateId = todoListModal.get_todoList_size() + 1;
+      newTodo.set_id(generateId.toString());
       newTodo.set_taskName(taskInputController.text);
       todoListModal.add_todo_item(newTodo);
       getListTodo();
       taskInputController.text = "";
-      scrollController?.animateTo(scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 500), curve: Curves.easeOut);
-      FocusScope.of(context).requestFocus(FocusNode());
       notifyListeners();
     }
   }
 
-  void getListTodo() {
+  void removeItem(TodoModal todoModal) {
+    String itemId = todoModal.get_id();
     List<TodoModal> listTodoModal = todoListModal.get_todoList();
-    this.listTodo = listTodoModal;
+    listTodoModal.removeWhere((item) => item.get_id() == itemId);
     notifyListeners();
   }
 }
