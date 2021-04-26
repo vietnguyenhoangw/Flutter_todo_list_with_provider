@@ -4,8 +4,12 @@ import 'package:flutter/widgets.dart';
 class AddTaskHeader extends StatefulWidget {
   final textFieldController;
   final voidCallback;
+  final buttonTitle;
 
-  AddTaskHeader({this.textFieldController, this.voidCallback});
+  AddTaskHeader(
+      {this.textFieldController,
+      this.voidCallback,
+      this.buttonTitle = "btnTitle"});
 
   @override
   _AddTaskHeaderState createState() => _AddTaskHeaderState();
@@ -18,7 +22,8 @@ class _AddTaskHeaderState extends State<AddTaskHeader> {
         child: Expanded(
             flex: 0,
             child: Container(
-              margin: const EdgeInsets.only(top: 20.0),
+              padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+              margin: const EdgeInsets.only(top: 40.0),
               alignment: Alignment.topCenter,
               child: Row(
                 children: [
@@ -35,7 +40,7 @@ class _AddTaskHeaderState extends State<AddTaskHeader> {
                   Expanded(
                       flex: 1,
                       child: ElevatedButton(
-                        child: Text('Add'),
+                        child: Text(widget.buttonTitle.toString()),
                         onPressed: () => widget.voidCallback(),
                         style: ElevatedButton.styleFrom(
                           primary: Colors.yellow,

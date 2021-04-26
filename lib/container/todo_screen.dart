@@ -27,17 +27,18 @@ class _TodoScreenState extends State<TodoScreen> {
       body: Builder(
         builder: (BuildContext newContext) {
           return Container(
-              padding: const EdgeInsets.all(20.0),
               child: Column(
-                children: [
-                  AddTaskHeader(
-                    textFieldController: widget.taskInputController,
-                    voidCallback: () => todoListVM.addNewItem(
-                        widget.taskInputController, newContext),
-                  ),
-                  ListContent(scrollController: widget._scrollController)
-                ],
-              ));
+            children: [
+              AddTaskHeader(
+                buttonTitle: todoListVM.isEditMode ? "Done" : "Add",
+                textFieldController: widget.taskInputController,
+                voidCallback: () => todoListVM.onPressAddItem(
+                    widget.taskInputController, newContext),
+              ),
+              ListContent(scrollController: widget._scrollController),
+              Footer(),
+            ],
+          ));
         },
       ),
     );
@@ -55,6 +56,7 @@ class ListContent extends StatelessWidget {
     return Expanded(
         flex: 1,
         child: Container(
+          padding: const EdgeInsets.only(left: 20.0, right: 20.0),
           alignment: Alignment.topCenter,
           child: ListView.builder(
               controller: scrollController,
@@ -96,21 +98,69 @@ class TodoItem extends StatelessWidget {
               '${listItem[index].get_taskName()}',
             ),
           ),
-          Expanded(
-            flex: 0,
-            child: MaterialButton(
-              minWidth: 20.0,
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-              onPressed: () =>
-                  Provider.of<TodoViewModal>(context, listen: false)
-                      .removeItem(listItem[index]),
+          Container(
+            padding: const EdgeInsets.only(right: 15.0),
+            child: GestureDetector(
+              onTap: () => Provider.of<TodoViewModal>(context, listen: false)
+                  .editItem(listItem[index]),
+              child: Icon(
+                Icons.edit,
+                color: Colors.black38,
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.only(right: 15.0),
+            child: GestureDetector(
+              onTap: () => Provider.of<TodoViewModal>(context, listen: false)
+                  .removeItem(listItem[index]),
               child: Icon(
                 Icons.delete,
                 color: Colors.black38,
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class Footer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.amber,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Container(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                Provider.of<TodoViewModal>(context).isEditMode
+                    ? "EDIT TASK"
+                    : "ADD TASK",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          Provider.of<TodoViewModal>(context).isEditMode
+              ? Expanded(
+                  flex: 0,
+                  child: Container(
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: GestureDetector(
+                      onTap: () =>
+                          Provider.of<TodoViewModal>(context, listen: false)
+                              .turnOffEditMode(),
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.black38,
+                      ),
+                    ),
+                  ))
+              : Container(),
         ],
       ),
     );
