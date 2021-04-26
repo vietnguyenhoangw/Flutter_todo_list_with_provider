@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:todolist_with_provider/localization/app_localizations.dart';
 import 'package:todolist_with_provider/modal/todo.dart';
 import 'package:todolist_with_provider/viewmodal/todo_viewmodal.dart';
 import 'package:todolist_with_provider/widget/add_task_header.dart';
@@ -30,7 +31,9 @@ class _TodoScreenState extends State<TodoScreen> {
               child: Column(
             children: [
               AddTaskHeader(
-                buttonTitle: todoListVM.isEditMode ? "Done" : "Add",
+                buttonTitle: todoListVM.isEditMode
+                    ? AppLocalizations.of(context).translate("done")
+                    : AppLocalizations.of(context).translate("add"),
                 textFieldController: widget.taskInputController,
                 voidCallback: () => todoListVM.onPressAddItem(
                     widget.taskInputController, newContext),
@@ -139,8 +142,12 @@ class Footer extends StatelessWidget {
               padding: const EdgeInsets.all(20.0),
               child: Text(
                 Provider.of<TodoViewModal>(context).isEditMode
-                    ? "EDIT TASK"
-                    : "ADD TASK",
+                    ? AppLocalizations.of(context)
+                        .translate("editTask")
+                        .toUpperCase()
+                    : AppLocalizations.of(context)
+                        .translate("addTask")
+                        .toUpperCase(),
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),

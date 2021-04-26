@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:todolist_with_provider/localization/app_localizations.dart';
 
 class AddTaskHeader extends StatefulWidget {
   final textFieldController;
@@ -32,7 +33,8 @@ class _AddTaskHeaderState extends State<AddTaskHeader> {
                     child: TextFormField(
                       controller: widget.textFieldController,
                       decoration: InputDecoration(
-                        hintText: 'Add task title',
+                        hintText: AppLocalizations.of(context)
+                            .translate("addTaskName"),
                       ),
                     ),
                   ),
