@@ -11,6 +11,8 @@ class TodoModal {
   String get_taskName() => _taskName;
   String get_taskDescription() => _taskDescription;
 
+  TodoModal();
+
   @override
   String toString() {
     return 'TodoModal{_id: $_id, _taskName: $_taskName, _taskDescription: $_taskDescription}';
@@ -26,5 +28,19 @@ class TodoModal {
 
   void set_taskDescription(String value) {
     _taskDescription = value;
+  }
+
+  Map toJson() => {
+        'id': _id,
+        'taskName': _taskName,
+        'taskDescription': _taskDescription,
+      };
+
+  factory TodoModal.fromJson(dynamic json) {
+    TodoModal todoModal = new TodoModal();
+    todoModal.set_id(json['id'] as String);
+    todoModal.set_taskName(json['taskName'] as String);
+    todoModal.set_taskDescription(json['taskDescription']);
+    return todoModal;
   }
 }

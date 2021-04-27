@@ -1,12 +1,12 @@
+import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:todolist_with_provider/modal/todo.dart';
-import 'package:todolist_with_provider/modal/todo_list.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:todolist_with_provider/utils/application_functions.dart';
+import 'package:todolist_with_provider/utils/share_reference_functions.dart';
 
 class TodoViewModal extends ChangeNotifier {
   // init modal
-  TodoListModal todoListModal = new TodoListModal();
   TextEditingController taskInputController;
 
   // decrease variance
@@ -14,26 +14,30 @@ class TodoViewModal extends ChangeNotifier {
   bool isEditMode = false;
   TodoModal editTodoItem;
 
-  void getListTodo() {
-    List<TodoModal> listTodoModal = todoListModal.get_todoList();
-    this.listTodo = listTodoModal;
+  void setController(
+    TextEditingController taskInputController,
+  ) {
+    this.taskInputController = taskInputController;
+  }
+
+  void getListTodo() async {
+    String todoListFromLocal = await getStringFromLocal("localTodoList");
+    var todoListJson = json.decode(todoListFromLocal);
+    List<TodoModal> listTodoFromJson = todoListJson
+        .map<TodoModal>((tagJson) => TodoModal.fromJson(tagJson))
+        .toList();
+    this.listTodo = listTodoFromJson;
     notifyListeners();
   }
 
   void onPressAddItem(
     TextEditingController taskInputController,
     BuildContext context,
-  ) {
+  ) async {
     if (taskInputController.text.isEmpty) {
-      Fluttertoast.showToast(
-          msg: "Task title is empty",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black38,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      showToast("Task title is empty");
     } else {
+      // -- EDIT TASK MODE --
       if (this.isEditMode) {
         TodoModal newTodo = new TodoModal();
         newTodo.set_id(editTodoItem.get_id());
@@ -46,28 +50,56 @@ class TodoViewModal extends ChangeNotifier {
             this.listTodo.insert(index, newTodo);
           }
         }
+
+        String jsonListTodo = jsonEncode(this.listTodo);
+        bool saveToLocal =
+            await saveStringToLocal("localTodoList", jsonListTodo);
+        if (saveToLocal) {
+          this.isEditMode = false;
+          taskInputController.text = "";
+          getListTodo();
+          notifyListeners();
+          showToast("Edit task success");
+        } else {
+          showToast("Edit task fail");
+        }
       } else {
+        // -- ADD TASK MODE --
+        // create new todo task
         TodoModal newTodo = new TodoModal();
-        int generateId = todoListModal.get_todoList_size() + 1;
+        int generateId = this.listTodo.length + 1;
         newTodo.set_id(generateId.toString());
         newTodo.set_taskName(taskInputController.text);
-        todoListModal.add_todo_item(newTodo);
-      }
 
-      this.taskInputController = taskInputController;
-      this.isEditMode = false;
-      taskInputController.text = "";
-      getListTodo();
-      notifyListeners();
+        // add new todo task into list
+        // after add, convert to json and add to local storage
+        this.listTodo.add(newTodo);
+        String jsonListTodo = jsonEncode(this.listTodo);
+        bool saveToLocal =
+            await saveStringToLocal("localTodoList", jsonListTodo);
+
+        if (saveToLocal) {
+          this.isEditMode = false;
+          taskInputController.text = "";
+          getListTodo();
+          notifyListeners();
+          showToast("Add task success");
+        } else {
+          showToast("Add task fail");
+        }
+      }
     }
+    FocusScope.of(context).unfocus();
   }
 
-  void removeItem(TodoModal todoModal) {
+  void removeItem(TodoModal todoModal) async {
     String itemId = todoModal.get_id();
-
-    List<TodoModal> listTodoModal = todoListModal.get_todoList();
-    listTodoModal.removeWhere((item) => item.get_id() == itemId);
-
+    this.listTodo.removeWhere((item) => item.get_id() == itemId);
+    String jsonListTodo = jsonEncode(this.listTodo);
+    bool saveToLocal = await saveStringToLocal("localTodoList", jsonListTodo);
+    saveToLocal
+        ? showToast("Remove task success")
+        : showToast("Remove task fail");
     notifyListeners();
   }
 

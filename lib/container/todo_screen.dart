@@ -24,6 +24,8 @@ class _TodoScreenState extends State<TodoScreen> {
   @override
   Widget build(BuildContext context) {
     final todoListVM = Provider.of<TodoViewModal>(context);
+    Provider.of<TodoViewModal>(context, listen: false)
+        .setController(widget.taskInputController);
     return Scaffold(
       body: Builder(
         builder: (BuildContext newContext) {
